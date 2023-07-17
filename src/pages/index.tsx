@@ -6,6 +6,8 @@ import Head from "next/head";
 import Link from "next/link";
 import { useState } from "react";
 import Header from "~/components/Header";
+import { NoteCard } from "~/components/NoteCard";
+import { NoteEditor } from "~/components/NoteEditor";
 import { api, type RouterOutputs } from "~/utils/api";
 
 export default function Home() {
@@ -25,24 +27,43 @@ export default function Home() {
 }
 
 const Content: React.FC = () => {
-
   type Topic = RouterOutputs["topic"]["getAll"][0];
 
   const { data: sessionData } = useSession();
-  const [ selectedTopic, setSelectedTopic ] = useState<Topic | null>(null);
+  const [selectedTopic, setSelectedTopic] = useState<Topic | null>(null);
   const { data: topics, refetch: refetchTopics } = api.topic.getAll.useQuery(
     undefined,
     {
       enabled: sessionData?.user !== undefined,
       onSuccess: (data) => {
         setSelectedTopic(selectedTopic ?? data[0] ?? null);
-      }
+      },
     }
   );
   const createTopic = api.topic.create.useMutation({
     onSuccess: () => {
       void refetchTopics();
+    },
+  });
+  const { data: notes, refetch: refetchNotes } = api.note.getAll.useQuery(
+    {
+      topicId: selectedTopic?.id ?? "",
+    },
+    {
+      enabled: sessionData?.user !== undefined && selectedTopic !== null,
     }
+  );
+
+  const createNote = api.note.create.useMutation({
+    onSuccess: () => {
+      void refetchNotes();
+    },
+  });
+
+  const deleteNote = api.note.delete.useMutation({
+    onSuccess: () => {
+      void refetchNotes();
+    },
   });
 
   return (
@@ -51,11 +72,13 @@ const Content: React.FC = () => {
         <ul className="menu rounded-box w-56 bg-base-100 p-2">
           {topics?.map((topic) => (
             <li key={topic.id}>
-              <a href="#"
-              onClick={(evt) => {
-                evt.preventDefault();
-                setSelectedTopic(topic)
-              }}>
+              <a
+                href="#"
+                onClick={(evt) => {
+                  evt.preventDefault();
+                  setSelectedTopic(topic);
+                }}
+              >
                 {topic.title}
               </a>
             </li>
@@ -76,7 +99,27 @@ const Content: React.FC = () => {
           }}
         />
       </div>
-      <div className="col-span-3"></div>
+      <div className="col-span-3">
+        <div>
+          {notes?.map((note) => (
+            <div className="mt-5" key={note.id}>
+              <NoteCard
+              note={note}
+              onDelete={() => void deleteNote.mutate({ id: note.id })}
+              />
+            </div>
+          ))}
+        </div>
+        <NoteEditor
+          onSave={({ title, content }) => {
+            void createNote.mutate({
+              title,
+              content,
+              topicId: selectedTopic?.id ?? "",
+            });
+          }}
+        />
+      </div>
     </div>
   );
 };
