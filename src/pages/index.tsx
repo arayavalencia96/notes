@@ -3,24 +3,29 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { useSession } from "next-auth/react";
 import Head from "next/head";
-import Link from "next/link";
 import { useState } from "react";
 import Header from "~/components/Header";
 import { NoteCard } from "~/components/NoteCard";
 import { NoteEditor } from "~/components/NoteEditor";
+import Principal from "~/components/Principal";
 import { api, type RouterOutputs } from "~/utils/api";
 
 export default function Home() {
+  const { data: sessionData } = useSession();
   return (
     <>
       <Head>
         <title>Memowise</title>
         <meta name="description" content="Página realizada por Axel Araya" />
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="/note.svg" />
       </Head>
       <main>
         <Header />
-        <Content />
+        { sessionData?.user ? (
+          <Content />
+        ) : (
+        <Principal />
+        )}
       </main>
     </>
   );
