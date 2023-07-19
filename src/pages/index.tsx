@@ -4,6 +4,7 @@
 import { useSession } from "next-auth/react";
 import Head from "next/head";
 import { useState } from "react";
+import Footer from "~/components/Footer";
 import Header from "~/components/Header";
 import { NoteCard } from "~/components/NoteCard";
 import { NoteEditor } from "~/components/NoteEditor";
@@ -19,14 +20,11 @@ export default function Home() {
         <meta name="description" content="Página realizada por Axel Araya" />
         <link rel="icon" href="/note.svg" />
       </Head>
-      <main>
-        <Header />
-        { sessionData?.user ? (
-          <Content />
-        ) : (
-        <Principal />
-        )}
-      </main>
+      <Header />
+      <main>{sessionData?.user ? <Content /> : <Principal />}</main>
+      <footer>
+        <Footer />
+      </footer>
     </>
   );
 }
@@ -109,8 +107,8 @@ const Content: React.FC = () => {
           {notes?.map((note) => (
             <div className="mt-5" key={note.id}>
               <NoteCard
-              note={note}
-              onDelete={() => void deleteNote.mutate({ id: note.id })}
+                note={note}
+                onDelete={() => void deleteNote.mutate({ id: note.id })}
               />
             </div>
           ))}
