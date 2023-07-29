@@ -24,9 +24,9 @@ export const NoteEditor = ({
         </h2>
         <CodeMirror
           value={code}
-          width="500px"
-          height="30vh"
-          minWidth="100%"
+          width="100%"
+          height="70%"
+          minWidth="70%"
           minHeight="30vh"
           extensions={[
             markdown({ base: markdownLanguage, codeLanguages: languages }),
@@ -37,16 +37,19 @@ export const NoteEditor = ({
       </div>
       <div className="card-actions justify-end">
         <button
-        onClick={() => {
+          onClick={() => {
             onSave({
-                title,
-                content: code,
+              title,
+              content: code,
             });
             setcode("");
             setTitle("");
-        }}
-        disabled={title.trim().length === 0 || code.trim().length === 0}
-        className="btn btn-primary">Guardar</button>
+          }}
+          disabled={title.trim().length === 0 || code.trim().length === 0}
+          className="btn btn-primary"
+        >
+          Guardar
+        </button>
       </div>
     </div>
   );
