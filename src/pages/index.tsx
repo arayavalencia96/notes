@@ -10,8 +10,7 @@ import { NoteCard } from "~/components/NoteCard";
 import { NoteEditor } from "~/components/NoteEditor";
 import Principal from "~/components/Principal";
 import { api, type RouterOutputs } from "~/utils/api";
-import { faTrashCan } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { FaPlus, FaTrash } from "react-icons/fa";
 
 export default function Home() {
   const { data: sessionData } = useSession();
@@ -38,6 +37,8 @@ const Content: React.FC = () => {
 
   const { data: sessionData } = useSession();
   const [selectedTopic, setSelectedTopic] = useState<Topic | null>(null);
+  const [inputValue, setInputValue] = useState("");
+  const [selectedTopicId, setSelectedTopicId] = useState<string | null>(null);
 
   const { data: topics, refetch: refetchTopics } = api.topic.getAll.useQuery(
     undefined,
@@ -62,6 +63,7 @@ const Content: React.FC = () => {
       void refetchTopics();
     },
   });
+
   const createNote = api.note.create.useMutation({
     onSuccess: () => {
       void refetchNotes();
@@ -79,6 +81,15 @@ const Content: React.FC = () => {
       void refetchTopics();
     },
   });
+
+  const handleCreateTopic = () => {
+    createTopic.mutate({ title: inputValue });
+    setInputValue("");
+  };
+
+  const handleClick = (id: string) => {
+    setSelectedTopicId(id);
+  };
 
   async function deleteAllNotesWithTopicId(topicId: string) {
     try {
@@ -102,8 +113,14 @@ const Content: React.FC = () => {
         <ul className="rounded-box w-56 bg-base-100 p-2">
           {topics?.map((topic) => (
             <li
+              onClick={() => handleClick(topic.id)}
               key={topic.id}
-              className="flex items-center justify-between p-2 hover:bg-base-300"
+              id={`topic-${topic.id}`}
+              className={`flex items-center justify-between p-2 hover:bg-base-300 ${
+                selectedTopicId === topic.id
+                  ? "bg-base-300"
+                  : "bg-base-100 hover:bg-base-200"
+              }`}
             >
               <a
                 className="flex-grow hover:text-blue-500"
@@ -116,30 +133,43 @@ const Content: React.FC = () => {
                 {topic.title}
               </a>
               <button
-                className="btn-sm"
+                className="btn-sm hover:text-blue-500"
                 title="Eliminar"
                 type="button"
                 onClick={() => void deleteAllNotesWithTopicId(topic.id)}
               >
-                <FontAwesomeIcon icon={faTrashCan} />
+                <FaTrash />
               </button>
             </li>
           ))}
         </ul>
         <div className="divider"></div>
-        <input
-          type="text"
-          placeholder="Nuevo Tema"
-          className="input-borderer input input-sm w-full"
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              createTopic.mutate({
-                title: e.currentTarget.value,
-              });
-              e.currentTarget.value = "";
-            }
-          }}
-        />
+
+        <div className="flex items-center justify-between p-2">
+          <input
+            type="text"
+            placeholder="Nuevo Tema"
+            className="input-borderer input input-sm w-full border-4 border-solid"
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                createTopic.mutate({
+                  title: e.currentTarget.value,
+                });
+                e.currentTarget.value = "";
+              }
+            }}
+          />
+          <button
+            className="btn-sm"
+            title="f"
+            type="button"
+            onClick={handleCreateTopic}
+          >
+            <FaPlus />
+          </button>
+        </div>
       </div>
       <div className="col-span-3">
         <div>
