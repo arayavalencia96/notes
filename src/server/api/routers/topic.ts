@@ -26,4 +26,13 @@ export const topicRouter = createTRPCRouter({
             }
         });
     }),
+    delete: protectedProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      return await ctx.prisma.topic.delete({
+        where: {
+          id: input.id,
+        },
+      });
+    }),
 });

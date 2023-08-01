@@ -10,22 +10,26 @@ import { NoteCard } from "~/components/NoteCard";
 import { NoteEditor } from "~/components/NoteEditor";
 import Principal from "~/components/Principal";
 import { api, type RouterOutputs } from "~/utils/api";
+import { faTrashCan } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 export default function Home() {
   const { data: sessionData } = useSession();
   return (
-    <>
+    <div className="flex min-h-screen flex-col">
       <Head>
         <title>Memowise</title>
         <meta name="description" content="Página realizada por Axel Araya" />
         <link rel="icon" href="/note.svg" />
       </Head>
       <Header />
-      <main>{sessionData?.user ? <Content /> : <Principal />}</main>
+      <main className="flex-grow pb-6">
+        {sessionData?.user ? <Content /> : <Principal />}
+      </main>
       <footer>
         <Footer />
       </footer>
-    </>
+    </div>
   );
 }
 
@@ -34,6 +38,7 @@ const Content: React.FC = () => {
 
   const { data: sessionData } = useSession();
   const [selectedTopic, setSelectedTopic] = useState<Topic | null>(null);
+
   const { data: topics, refetch: refetchTopics } = api.topic.getAll.useQuery(
     undefined,
     {
@@ -43,11 +48,6 @@ const Content: React.FC = () => {
       },
     }
   );
-  const createTopic = api.topic.create.useMutation({
-    onSuccess: () => {
-      void refetchTopics();
-    },
-  });
   const { data: notes, refetch: refetchNotes } = api.note.getAll.useQuery(
     {
       topicId: selectedTopic?.id ?? "",
@@ -57,6 +57,11 @@ const Content: React.FC = () => {
     }
   );
 
+  const createTopic = api.topic.create.useMutation({
+    onSuccess: () => {
+      void refetchTopics();
+    },
+  });
   const createNote = api.note.create.useMutation({
     onSuccess: () => {
       void refetchNotes();
@@ -69,13 +74,39 @@ const Content: React.FC = () => {
     },
   });
 
+  const deleteTopic = api.topic.delete.useMutation({
+    onSuccess: () => {
+      void refetchTopics();
+    },
+  });
+
+  async function deleteAllNotesWithTopicId(topicId: string) {
+    try {
+      if (notes !== undefined) {
+        const notesToDelete = notes.filter((note) => note.topicId === topicId);
+        for (const note of notesToDelete) {
+          const noteToDelete = { id: note.id };
+          await deleteNote.mutateAsync(noteToDelete);
+        }
+      }
+      await deleteTopic.mutateAsync({ id: topicId });
+      console.log("Se eliminó el topic correctamente.");
+    } catch (error) {
+      console.error("Error al eliminar el topico:", error);
+    }
+  }
+
   return (
     <div className="mx-5 mt-5 grid grid-cols-4 gap-2">
       <div className="px-2">
-        <ul className="menu rounded-box w-56 bg-base-100 p-2">
+        <ul className="rounded-box w-56 bg-base-100 p-2">
           {topics?.map((topic) => (
-            <li key={topic.id}>
+            <li
+              key={topic.id}
+              className="flex items-center justify-between p-2 hover:bg-base-300"
+            >
               <a
+                className="flex-grow hover:text-blue-500"
                 href="#"
                 onClick={(evt) => {
                   evt.preventDefault();
@@ -84,6 +115,14 @@ const Content: React.FC = () => {
               >
                 {topic.title}
               </a>
+              <button
+                className="btn-sm"
+                title="Eliminar"
+                type="button"
+                onClick={() => void deleteAllNotesWithTopicId(topic.id)}
+              >
+                <FontAwesomeIcon icon={faTrashCan} />
+              </button>
             </li>
           ))}
         </ul>
