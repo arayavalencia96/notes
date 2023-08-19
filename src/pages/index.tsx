@@ -4,6 +4,7 @@ import Footer from "~/components/Footer";
 import Header from "~/components/Header";
 import Principal from "~/components/Principal";
 import { Content } from "~/components/Content";
+import { SelectedTopicProvider } from "~/contexts/SelectedTopicContext";
 
 export default function Home() {
   const { data: sessionData } = useSession();
@@ -16,7 +17,13 @@ export default function Home() {
       </Head>
       <Header />
       <main className="flex-grow pb-6">
-        {sessionData?.user ? <Content /> : <Principal />}
+        {sessionData?.user ? (
+          <SelectedTopicProvider>
+            <Content />
+          </SelectedTopicProvider>
+        ) : (
+          <Principal />
+        )}
       </main>
       <footer>
         <Footer />
