@@ -37,7 +37,7 @@ export const CreateNote: React.FC = () => {
   });
 
   return (
-    <div className="col-span-3">
+    <div className="col-span-3 w-full md:w-3/4">
       <div>
         {notes?.map((note) => (
           <div className="mt-5" key={note.id}>
