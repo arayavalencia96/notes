@@ -1,29 +1,21 @@
-import { useSession } from "next-auth/react";
-import { useState } from "react";
 import { api, type RouterOutputs } from "~/utils/api";
-import {
-  FaPlus,
-  FaTrash,
-  FaRegHandPointDown,
-  FaRegHandPointUp,
-} from "react-icons/fa";
-import { useSelectedTopic } from "~/contexts/SelectedTopicContext";
 import {
   FixedSizeList as List,
   type ListChildComponentProps,
 } from "react-window";
+import { useSession } from "next-auth/react";
+import { useSelectedTopic } from "~/contexts/SelectedTopicContext";
+import { FaRegHandPointDown, FaRegHandPointUp, FaTrash } from "react-icons/fa";
 
-export const NavTopics: React.FC = () => {
+export const TopicsList = () => {
   type Topic = RouterOutputs["topic"]["getAll"][0];
   const { data: sessionData } = useSession();
-  const [inputValue, setInputValue] = useState("");
   const {
-    selectedTopicId,
-    setSelectedTopicId,
     selectedTopic,
     setSelectedTopic,
+    setSelectedTopicId,
+    selectedTopicId,
   } = useSelectedTopic();
-
   const { data: topics, refetch: refetchTopics } = api.topic.getAll.useQuery(
     undefined,
     {
@@ -33,44 +25,10 @@ export const NavTopics: React.FC = () => {
       },
     }
   );
-
-  const { data: notes, refetch: refetchNotes } = api.note.getAll.useQuery(
-    {
-      topicId: selectedTopic?.id ?? "",
-    },
-    {
-      enabled: sessionData?.user !== undefined && selectedTopic !== null,
-    }
-  );
-
-  const createTopic = api.topic.create.useMutation({
-    onSuccess: () => {
-      void refetchTopics();
-    },
-  });
-
-  const deleteNote = api.note.delete.useMutation({
-    onSuccess: () => {
-      void refetchNotes();
-    },
-  });
-
-  const deleteTopic = api.topic.delete.useMutation({
-    onSuccess: () => {
-      void refetchTopics();
-    },
-  });
-
-  const handleCreateTopic = () => {
-    createTopic.mutate({ title: inputValue });
-    setInputValue("");
-  };
-
   const handleClick = (id: string, topic: Topic) => {
     setSelectedTopicId(id);
     setSelectedTopic(topic);
   };
-
   async function deleteAllNotesWithTopicId(topicId: string) {
     try {
       if (notes !== undefined) {
@@ -86,6 +44,26 @@ export const NavTopics: React.FC = () => {
       console.error("Error al eliminar el topico:", error);
     }
   }
+  const { data: notes, refetch: refetchNotes } = api.note.getAll.useQuery(
+    {
+      topicId: selectedTopic?.id ?? "",
+    },
+    {
+      enabled: sessionData?.user !== undefined && selectedTopic !== null,
+    }
+  );
+
+  const deleteNote = api.note.delete.useMutation({
+    onSuccess: () => {
+      void refetchNotes();
+    },
+  });
+
+  const deleteTopic = api.topic.delete.useMutation({
+    onSuccess: () => {
+      void refetchTopics();
+    },
+  });
 
   const WithoutTopics = () => {
     return (
@@ -96,7 +74,6 @@ export const NavTopics: React.FC = () => {
       </div>
     );
   };
-
   const Row = ({ index, style }: ListChildComponentProps) => {
     const topic = topics?.[index];
 
@@ -137,50 +114,22 @@ export const NavTopics: React.FC = () => {
       </li>
     );
   };
-
   return (
-    <div className="order flex w-full items-center justify-center px-2 md:h-[35vh] md:w-1/4 md:flex-col">
-      <div className="divider md:hidden"></div>
+    <div>
       {topics && topics?.length > 0 ? (
-        <List
-          height={Math.min(200, topics.length * 50)}
-          width={`auto`}
-          itemCount={topics?.length || 0}
-          itemSize={50}
-        >
-          {Row}
-        </List>
+        <div>
+          <List
+            height={Math.min(200, topics.length * 50)}
+            width={`auto`}
+            itemCount={topics?.length || 0}
+            itemSize={50}
+          >
+            {Row}
+          </List>
+        </div>
       ) : (
         <WithoutTopics />
       )}
-      <div className="divider"></div>
-
-      <div className="flex items-center justify-between">
-        <input
-          type="text"
-          placeholder="Nuevo Tema"
-          autoFocus
-          className="input-borderer border-1 input input-primary input-sm w-full border-solid"
-          value={inputValue}
-          onChange={(e) => setInputValue(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              createTopic.mutate({
-                title: e.currentTarget.value,
-              });
-              setInputValue("");
-            }
-          }}
-        />
-        <button
-          className="btn-sm"
-          title="Agregar"
-          type="button"
-          onClick={handleCreateTopic}
-        >
-          <FaPlus />
-        </button>
-      </div>
     </div>
   );
 };
