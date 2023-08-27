@@ -8,6 +8,8 @@ interface SelectedTopicContextType {
   setSelectedTopicId: (id: string | null) => void;
   selectedTopic: Topic | null;
   setSelectedTopic: (topic: Topic | null) => void;
+  action: string | null;
+  setAction: (action: string | null) => void;
 }
 
 const SelectedTopicContext = createContext<
@@ -19,6 +21,7 @@ export const SelectedTopicProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const [selectedTopicId, setSelectedTopicId] = useState<string | null>(null);
   const [selectedTopic, setSelectedTopic] = useState<Topic | null>(null);
+  const [action, setAction] = useState<string | null>("");
 
   return (
     <SelectedTopicContext.Provider
@@ -27,6 +30,8 @@ export const SelectedTopicProvider: React.FC<{ children: React.ReactNode }> = ({
         setSelectedTopicId,
         selectedTopic,
         setSelectedTopic,
+        action,
+        setAction,
       }}
     >
       {children}

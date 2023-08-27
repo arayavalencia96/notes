@@ -9,13 +9,17 @@ import { FaRegHandPointDown, FaRegHandPointUp, FaTrash } from "react-icons/fa";
 
 export const TopicsList = () => {
   type Topic = RouterOutputs["topic"]["getAll"][0];
+
   const { data: sessionData } = useSession();
+
   const {
     selectedTopic,
     setSelectedTopic,
     setSelectedTopicId,
     selectedTopicId,
+    setAction,
   } = useSelectedTopic();
+
   const { data: topics, refetch: refetchTopics } = api.topic.getAll.useQuery(
     undefined,
     {
@@ -25,10 +29,13 @@ export const TopicsList = () => {
       },
     }
   );
-  const handleClick = (id: string, topic: Topic) => {
+
+  const handleClick = (id: string, topic: Topic, action: string) => {
     setSelectedTopicId(id);
     setSelectedTopic(topic);
+    setAction(action);
   };
+
   async function deleteAllNotesWithTopicId(topicId: string) {
     try {
       if (notes !== undefined) {
@@ -44,6 +51,7 @@ export const TopicsList = () => {
       console.error("Error al eliminar el topico:", error);
     }
   }
+
   const { data: notes, refetch: refetchNotes } = api.note.getAll.useQuery(
     {
       topicId: selectedTopic?.id ?? "",
@@ -74,6 +82,7 @@ export const TopicsList = () => {
       </div>
     );
   };
+
   const Row = ({ index, style }: ListChildComponentProps) => {
     const topic = topics?.[index];
 
@@ -84,7 +93,6 @@ export const TopicsList = () => {
     return (
       <li
         style={style}
-        onClick={() => handleClick(topic.id, topic)}
         key={topic.id}
         id={`topic-${topic.id}`}
         className={`flex items-center justify-between p-2 hover:bg-base-300 ${
@@ -98,7 +106,7 @@ export const TopicsList = () => {
           href="#"
           onClick={(evt) => {
             evt.preventDefault();
-            setSelectedTopic(topic);
+            handleClick(topic.id, topic, "select");
           }}
         >
           {topic.title}
@@ -107,13 +115,17 @@ export const TopicsList = () => {
           className="btn-sm hover:text-blue-500"
           title="Eliminar"
           type="button"
-          onClick={() => void deleteAllNotesWithTopicId(topic.id)}
+          onClick={() => {
+            handleClick(topic.id, topic, "delete");
+            void deleteAllNotesWithTopicId(topic.id);
+          }}
         >
           <FaTrash />
         </button>
       </li>
     );
   };
+
   return (
     <div>
       {topics && topics?.length > 0 ? (
