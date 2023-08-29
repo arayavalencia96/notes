@@ -4,6 +4,8 @@ import { api } from "~/utils/api";
 import { FaPlus } from "react-icons/fa";
 import { useSelectedTopic } from "~/contexts/SelectedTopicContext";
 import { TopicsList } from "./TopicsList";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export const Sidebar: React.FC = () => {
   const { data: sessionData } = useSession();
@@ -20,6 +22,10 @@ export const Sidebar: React.FC = () => {
   const createTopic = api.topic.create.useMutation({
     onSuccess: () => {
       void refetchTopics();
+      toast.success('Tema Creado')
+    },
+    onError: () => {
+      toast.error('No se pudo crear el tema');
     },
   });
 
@@ -29,7 +35,7 @@ export const Sidebar: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col-reverse justify-center mt-10 px-2 md:h-[35vh] md:1/4 md:flex-col">
+    <div className="md:1/4 mt-10 flex flex-col-reverse justify-center px-2 md:h-[35vh] md:flex-col">
       <div className="divider md:hidden"></div>
       <TopicsList />
       <div className="divider"></div>

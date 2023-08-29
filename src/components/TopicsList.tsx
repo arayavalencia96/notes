@@ -6,6 +6,8 @@ import {
 import { useSession } from "next-auth/react";
 import { useSelectedTopic } from "~/contexts/SelectedTopicContext";
 import { FaRegHandPointDown, FaRegHandPointUp, FaTrash } from "react-icons/fa";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export const TopicsList = () => {
   type Topic = RouterOutputs["topic"]["getAll"][0];
@@ -47,8 +49,9 @@ export const TopicsList = () => {
       }
       await deleteTopic.mutateAsync({ id: topicId });
       setSelectedTopicId(null);
+      toast.success('Tema eliminado');
     } catch (error) {
-      console.error("Error al eliminar el topico:", error);
+      toast.error('Error al eliminar el tema');
     }
   }
 

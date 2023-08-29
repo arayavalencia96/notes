@@ -3,6 +3,8 @@ import { api } from "~/utils/api";
 import { NoteCard } from "./NoteCard";
 import { NoteEditor } from "./NoteEditor";
 import { useSelectedTopic } from "~/contexts/SelectedTopicContext";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export const CreateNote: React.FC = () => {
   const { data: sessionData } = useSession();
@@ -27,12 +29,20 @@ export const CreateNote: React.FC = () => {
   const deleteNote = api.note.delete.useMutation({
     onSuccess: () => {
       void refetchNotes();
+      toast.success('Nota eliminada');
+    },
+    onError: () => {
+      toast.error('No se pudo eliminar la nota');
     },
   });
 
   const createNote = api.note.create.useMutation({
     onSuccess: () => {
       void refetchNotes();
+      toast.success('Nota creada correctamente');
+    },
+    onError: () => {
+      toast.error('Error al crear la nota');
     },
   });
 
