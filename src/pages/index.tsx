@@ -7,6 +7,7 @@ import { Content } from "~/components/Content";
 import { SelectedTopicProvider } from "~/contexts/SelectedTopicContext";
 import { Loading } from "~/components/Loading";
 import { LoadingProvider } from "~/contexts/LoadingContext";
+import { ToastContainer } from "react-toastify";
 
 export default function Home() {
   const { data: sessionData, status: sessionLoading } = useSession();
@@ -30,6 +31,18 @@ export default function Home() {
             <Principal />
           )}
         </main>
+        <ToastContainer
+          position="bottom-right"
+          autoClose={3000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="dark"
+        />
       </LoadingProvider>
       <footer>
         <Footer />
