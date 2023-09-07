@@ -7,11 +7,17 @@ type Note = RouterOutputs["note"]["getAll"][0];
 export const NoteCard = ({
   note,
   onDelete,
+  onClickEdit,
 }: {
   note: Note;
   onDelete: () => void;
+  onClickEdit: (note: Note) => void;
 }) => {
   const [isExpanded, setIsExpanded] = useState<boolean>(true);
+  const handleEditClick = () => {
+    onClickEdit(note);
+  };
+
   return (
     <div className="card mt-5 border border-gray-200 bg-base-100 shadow-xl">
       <div className="card-body m-0 p-3">
@@ -30,6 +36,12 @@ export const NoteCard = ({
           <div className="card-actions mx-2 flex justify-end">
             <button className="btn-warnin btn btn-xs px-5" onClick={onDelete}>
               Eliminar
+            </button>
+            <button
+              className="btn-warnin btn btn-xs px-5"
+              onClick={handleEditClick}
+            >
+              Editar
             </button>
           </div>
         </div>

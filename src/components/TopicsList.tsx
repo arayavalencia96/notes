@@ -5,7 +5,12 @@ import {
 } from "react-window";
 import { useSession } from "next-auth/react";
 import { useSelectedTopic } from "~/contexts/SelectedTopicContext";
-import { FaRegHandPointDown, FaRegHandPointUp, FaTrash } from "react-icons/fa";
+import {
+  FaEdit,
+  FaRegHandPointDown,
+  FaRegHandPointUp,
+  FaTrash,
+} from "react-icons/fa";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -32,10 +37,20 @@ export const TopicsList = () => {
     }
   );
 
-  const handleClick = (id: string, topic: Topic, action: string) => {
-    setSelectedTopicId(id);
+  const { data: notes, refetch: refetchNotes } = api.note.getAll.useQuery(
+    {
+      topicId: selectedTopic?.id ?? "",
+    },
+    {
+      enabled: sessionData?.user !== undefined && selectedTopic !== null,
+    }
+  );
+
+  const handleClick = async (id: string, topic: Topic, action: string) => {
     setSelectedTopic(topic);
+    setSelectedTopicId(id);
     setAction(action);
+    action === 'delete' ? await deleteAllNotesWithTopicId(topic.id): null;
   };
 
   async function deleteAllNotesWithTopicId(topicId: string) {
@@ -49,20 +64,11 @@ export const TopicsList = () => {
       }
       await deleteTopic.mutateAsync({ id: topicId });
       setSelectedTopicId(null);
-      toast.success('Tema eliminado');
+      toast.success("Tema eliminado");
     } catch (error) {
-      toast.error('Error al eliminar el tema');
+      toast.error("Error al eliminar el tema");
     }
   }
-
-  const { data: notes, refetch: refetchNotes } = api.note.getAll.useQuery(
-    {
-      topicId: selectedTopic?.id ?? "",
-    },
-    {
-      enabled: sessionData?.user !== undefined && selectedTopic !== null,
-    }
-  );
 
   const deleteNote = api.note.delete.useMutation({
     onSuccess: () => {
@@ -109,18 +115,27 @@ export const TopicsList = () => {
           href="#"
           onClick={(evt) => {
             evt.preventDefault();
-            handleClick(topic.id, topic, "select");
+            void handleClick(topic.id, topic, "select");
           }}
         >
           {topic.title}
         </a>
         <button
           className="btn-sm hover:text-blue-500"
+          title="Editar"
+          type="button"
+          onClick={() => {
+            void handleClick(topic.id, topic, "edit");
+          }}
+        >
+          <FaEdit />
+        </button>
+        <button
+          className="btn-sm hover:text-blue-500"
           title="Eliminar"
           type="button"
           onClick={() => {
-            handleClick(topic.id, topic, "delete");
-            void deleteAllNotesWithTopicId(topic.id);
+            void handleClick(topic.id, topic, "delete");
           }}
         >
           <FaTrash />

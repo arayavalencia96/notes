@@ -14,6 +14,7 @@ export const noteRouter = createTRPCRouter({
         },
       });
     }),
+
   create: protectedProcedure
     .input(
       z.object({ title: z.string(), content: z.string(), topicId: z.string() })
@@ -27,6 +28,7 @@ export const noteRouter = createTRPCRouter({
         },
       });
     }),
+
   delete: protectedProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {
@@ -35,5 +37,40 @@ export const noteRouter = createTRPCRouter({
           id: input.id,
         },
       });
+    }),
+
+  update: protectedProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        title: z.string(),
+        content: z.string(),
+        topicId: z.string(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { id, title, content, topicId } = input;
+      const existingNote = await ctx.prisma.note.findUnique({
+        where: {
+          id,
+        },
+      });
+
+      if (!existingNote) {
+        throw new Error(`No se encontró una nota con el ID: ${id}`);
+      }
+      if (topicId !== existingNote.topicId) {
+        throw new Error("No puedes cambiar el tema de una nota.");
+      }
+      const updatedNote = await ctx.prisma.note.update({
+        where: {
+          id,
+        },
+        data: {
+          title,
+          content,
+        },
+      });
+      return updatedNote;
     }),
 });

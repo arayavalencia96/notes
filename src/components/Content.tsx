@@ -17,7 +17,7 @@ export const Content: React.FC = () => {
     <div className="mx-5 mt-5 flex min-h-[75vh] flex-col md:flex-row">
       <Sidebar />
       <div className="hide mr-6 mt-8 inline-block min-h-[1em] w-[1px] self-stretch bg-gray-300 opacity-100 dark:opacity-25"></div>
-      {selectedTopicId !== null && action !== "delete" ? (
+      {selectedTopicId !== null && action === "select" ? (
         <CreateNote />
       ) : (
         <NotSelectedTopic />

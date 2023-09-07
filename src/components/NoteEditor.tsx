@@ -1,15 +1,36 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import CodeMirror from "@uiw/react-codemirror";
 import { markdown, markdownLanguage } from "@codemirror/lang-markdown";
 import { languages } from "@codemirror/language-data";
+import { type RouterOutputs } from "~/utils/api";
+type Note = RouterOutputs["note"]["getAll"][0];
 
 export const NoteEditor = ({
   onSave,
+  onEdit,
+  values,
+  isEdit,
 }: {
   onSave: (note: { title: string; content: string }) => void;
+  onEdit: (note: {
+    id: string;
+    topicId: string;
+    title: string;
+    content: string;
+  }) => void;
+  values?: Note;
+  isEdit?: boolean;
 }) => {
-  const [code, setcode] = useState<string>("");
+  const [code, setCode] = useState<string>("");
   const [title, setTitle] = useState<string>("");
+
+  useEffect(() => {
+    if (values) {
+      setCode(values?.content || "");
+      setTitle(values?.title || "");
+    }
+  }, [values]);
+
   return (
     <div className="card mt-5 border border-gray-200 bg-base-100 shadow-xl">
       <div className="card-body">
@@ -31,24 +52,33 @@ export const NoteEditor = ({
           extensions={[
             markdown({ base: markdownLanguage, codeLanguages: languages }),
           ]}
-          onChange={(value) => setcode(value)}
+          onChange={(value) => setCode(value)}
           className="border border-gray-300"
         />
       </div>
       <div className="card-actions justify-end">
         <button
           onClick={() => {
-            onSave({
-              title,
-              content: code,
-            });
-            setcode("");
+            if (!isEdit) {
+              onSave({
+                title,
+                content: code,
+              });
+            } else {
+              onEdit({
+                id: values?.id || "",
+                topicId: values?.topicId || "",
+                title,
+                content: code,
+              });
+            }
+            setCode("");
             setTitle("");
           }}
           disabled={title.trim().length === 0 || code.trim().length === 0}
           className="btn btn-primary"
         >
-          Guardar
+          {isEdit ? "Actualizar" : "Guardar"}
         </button>
       </div>
     </div>
