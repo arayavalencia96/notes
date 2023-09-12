@@ -8,6 +8,7 @@ import { SelectedTopicProvider } from "~/contexts/SelectedTopicContext";
 import { Loading } from "~/components/Loading";
 import { LoadingProvider } from "~/contexts/LoadingContext";
 import { ToastContainer } from "react-toastify";
+import { SelectedNoteProvider } from "~/contexts/SelectedNoteContext";
 
 export default function Home() {
   const { data: sessionData, status: sessionLoading } = useSession();
@@ -25,7 +26,9 @@ export default function Home() {
             <Loading />
           ) : sessionData?.user ? (
             <SelectedTopicProvider>
-              <Content />
+              <SelectedNoteProvider>
+                <Content />
+              </SelectedNoteProvider>
             </SelectedTopicProvider>
           ) : (
             <Principal />

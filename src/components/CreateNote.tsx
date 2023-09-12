@@ -3,11 +3,11 @@ import { api } from "~/utils/api";
 import { NoteCard } from "./NoteCard";
 import { NoteEditor } from "./NoteEditor";
 import { useSelectedTopic } from "~/contexts/SelectedTopicContext";
-import { useState } from "react";
 import { type RouterOutputs } from "~/utils/api";
 type Note = RouterOutputs["note"]["getAll"][0];
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useSelectedNote } from "~/contexts/SelectedNoteContext";
 
 const InitialValues: Note = {
   content: '',
@@ -21,7 +21,7 @@ const InitialValues: Note = {
 export const CreateNote: React.FC = () => {
   const { data: sessionData } = useSession();
   const { selectedTopic, setSelectedTopic } = useSelectedTopic();
-  const [selectedValues, setSelectedValues] = useState<Note>(InitialValues);
+  const { selectedNote, setSelectedNote, setIsEdit } = useSelectedNote();
 
   api.topic.getAll.useQuery(undefined, {
     enabled: sessionData?.user !== undefined,
@@ -78,7 +78,7 @@ export const CreateNote: React.FC = () => {
               note={note}
               onDelete={() => void deleteNote.mutate({ id: note.id })}
               onClickEdit={(note) => {
-                setSelectedValues(note);
+                setSelectedNote(note);
               }}
             />
           </div>
@@ -91,7 +91,7 @@ export const CreateNote: React.FC = () => {
             content,
             topicId: selectedTopic?.id ?? "",
           });
-          setSelectedValues(InitialValues);
+          setSelectedNote(InitialValues);
         }}
         onEdit={({ id, topicId, title, content }) => {
           void updateNote.mutate({
@@ -100,10 +100,10 @@ export const CreateNote: React.FC = () => {
             title,
             content,
           });
-          setSelectedValues(InitialValues);
+          setSelectedNote(InitialValues);
         }}
-        isEdit={selectedValues.id !== '' ?? true}
-        values={selectedValues}
+        isForEdit={selectedNote?.id !== '' ?? setIsEdit(true)}
+        values={selectedNote || InitialValues}
       />
     </div>
   );
