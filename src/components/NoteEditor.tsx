@@ -56,7 +56,7 @@ export const NoteEditor = ({
           className="border border-gray-300"
         />
       </div>
-      <div className="card-actions justify-end">
+      <div className="card-actions justify-end px-[2rem] pb-2">
         <button
           onClick={() => {
             if (!isEdit) {
@@ -76,7 +76,7 @@ export const NoteEditor = ({
             setTitle("");
           }}
           disabled={title.trim().length === 0 || code.trim().length === 0}
-          className="btn btn-primary"
+          className="btn btn-primary widthMobile"
         >
           {isEdit ? "Actualizar" : "Guardar"}
         </button>

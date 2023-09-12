@@ -15,4 +15,12 @@
     .min-h {
         min-height: 45vh;
     }
+
+    .widthMobile {
+        width: 100%;
+    }
+
+    .flexWrow {
+        flex-grow: 1;
+    }
 }

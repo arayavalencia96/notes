@@ -87,7 +87,7 @@ export const Sidebar: React.FC = () => {
             setInputValue(e.target.value);
           }}
           onKeyDown={(e) => {
-            if (e.key === "Enter") {
+            if (e.key === "Enter" && inputValue !== '') {
               if (isEditing) {
                 updateTopic.mutate({
                   id: selectedTopicId,
@@ -103,7 +103,8 @@ export const Sidebar: React.FC = () => {
           }}
         />
         <button
-          className="btn-sm"
+          className={`btn-sm ${inputValue === "" ? "" : "hover:text-primary"}`}
+          disabled={inputValue === ""}
           title="Agregar"
           type="button"
           onClick={(_) => {
