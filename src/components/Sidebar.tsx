@@ -1,7 +1,7 @@
 import { useSession } from "next-auth/react";
 import { useEffect, useMemo, useState } from "react";
 import { api } from "~/utils/api";
-import { FaPlus, FaRegEdit } from "react-icons/fa";
+import { FaPlus, FaRegEdit, FaRegTimesCircle } from "react-icons/fa";
 import { useSelectedTopic } from "~/contexts/SelectedTopicContext";
 import { TopicsList } from "./TopicsList";
 import { toast } from "react-toastify";
@@ -64,6 +64,12 @@ export const Sidebar: React.FC = () => {
     setInputValue("");
   };
 
+  const handleCancelClick = () => {
+    setInputValue("");
+    setSelectedTopic(null);
+    setAction("");
+  };
+
   useEffect(() => {
     if (isEditing) {
       setInputValue(selectedTopicTitle || "");
@@ -87,7 +93,7 @@ export const Sidebar: React.FC = () => {
             setInputValue(e.target.value);
           }}
           onKeyDown={(e) => {
-            if (e.key === "Enter") {
+            if (e.key === "Enter" && inputValue !== '') {
               if (isEditing) {
                 updateTopic.mutate({
                   id: selectedTopicId,
@@ -102,8 +108,19 @@ export const Sidebar: React.FC = () => {
             }
           }}
         />
+        { action === "edit" ? (
+          <button
+          className={`btn-sm ${inputValue === "" ? "" : "hover:text-error"}`}
+          title="Cancelar"
+          type="button"
+          onClick={handleCancelClick}
+        >
+          <FaRegTimesCircle />
+        </button>
+        ) : null }
         <button
-          className="btn-sm"
+          className={`btn-sm ${inputValue === "" ? "" : "hover:text-primary"}`}
+          disabled={inputValue === ""}
           title="Agregar"
           type="button"
           onClick={(_) => {

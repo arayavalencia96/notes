@@ -3,13 +3,23 @@ import CodeMirror from "@uiw/react-codemirror";
 import { markdown, markdownLanguage } from "@codemirror/lang-markdown";
 import { languages } from "@codemirror/language-data";
 import { type RouterOutputs } from "~/utils/api";
+import { useSelectedNote } from "~/contexts/SelectedNoteContext";
 type Note = RouterOutputs["note"]["getAll"][0];
+
+const InitialValues: Note = {
+  content: '',
+  createdAt: new Date(),
+  id: '',
+  title: '',
+  topicId: '',
+  updatedAt: new Date(),  
+};
 
 export const NoteEditor = ({
   onSave,
   onEdit,
   values,
-  isEdit,
+  isForEdit,
 }: {
   onSave: (note: { title: string; content: string }) => void;
   onEdit: (note: {
@@ -19,10 +29,11 @@ export const NoteEditor = ({
     content: string;
   }) => void;
   values?: Note;
-  isEdit?: boolean;
+  isForEdit?: boolean;
 }) => {
   const [code, setCode] = useState<string>("");
   const [title, setTitle] = useState<string>("");
+  const { setSelectedNote, setIsEdit } = useSelectedNote();
 
   useEffect(() => {
     if (values) {
@@ -56,10 +67,23 @@ export const NoteEditor = ({
           className="border border-gray-300"
         />
       </div>
-      <div className="card-actions justify-end">
+      <div className="card-actions justify-end px-[2rem] pb-2">
+        {isForEdit ? (
+          <button
+          onClick={() => {
+            setCode("");
+            setTitle("");
+            setSelectedNote(InitialValues);
+            setIsEdit(false);
+          }}
+          className="btn btn-error widthMobile"
+        >
+          Cancelar
+        </button>
+        ) : null}
         <button
           onClick={() => {
-            if (!isEdit) {
+            if (!isForEdit) {
               onSave({
                 title,
                 content: code,
@@ -76,9 +100,9 @@ export const NoteEditor = ({
             setTitle("");
           }}
           disabled={title.trim().length === 0 || code.trim().length === 0}
-          className="btn btn-primary"
+          className="btn btn-primary widthMobile"
         >
-          {isEdit ? "Actualizar" : "Guardar"}
+          {isForEdit ? "Actualizar" : "Guardar"}
         </button>
       </div>
     </div>

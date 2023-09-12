@@ -50,7 +50,7 @@ export const TopicsList = () => {
     setSelectedTopic(topic);
     setSelectedTopicId(id);
     setAction(action);
-    action === 'delete' ? await deleteAllNotesWithTopicId(topic.id): null;
+    action === "delete" ? await deleteAllNotesWithTopicId(topic.id) : null;
   };
 
   async function deleteAllNotesWithTopicId(topicId: string) {
@@ -120,26 +120,28 @@ export const TopicsList = () => {
         >
           {topic.title}
         </a>
-        <button
-          className="btn-sm hover:text-blue-500"
-          title="Editar"
-          type="button"
-          onClick={() => {
-            void handleClick(topic.id, topic, "edit");
-          }}
-        >
-          <FaEdit />
-        </button>
-        <button
-          className="btn-sm hover:text-blue-500"
-          title="Eliminar"
-          type="button"
-          onClick={() => {
-            void handleClick(topic.id, topic, "delete");
-          }}
-        >
-          <FaTrash />
-        </button>
+        <div className="flex">
+          <button
+            className="btn-sm hover:text-warning"
+            title="Editar"
+            type="button"
+            onClick={() => {
+              void handleClick(topic.id, topic, "edit");
+            }}
+          >
+            <FaEdit />
+          </button>
+          <button
+            className="btn-sm hover:text-error"
+            title="Eliminar"
+            type="button"
+            onClick={() => {
+              void handleClick(topic.id, topic, "delete");
+            }}
+          >
+            <FaTrash />
+          </button>
+        </div>
       </li>
     );
   };
