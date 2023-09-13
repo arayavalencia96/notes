@@ -60,7 +60,7 @@ export const noteRouter = createTRPCRouter({
         throw new Error(`No se encontró una nota con el ID: ${id}`);
       }
       if (topicId !== existingNote.topicId) {
-        throw new Error("No puedes cambiar el tema de una nota.");
+        throw new Error("No puedes cambiar el tópico de una nota.");
       }
       const updatedNote = await ctx.prisma.note.update({
         where: {

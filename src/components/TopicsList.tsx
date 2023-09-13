@@ -64,9 +64,9 @@ export const TopicsList = () => {
       }
       await deleteTopic.mutateAsync({ id: topicId });
       setSelectedTopicId(null);
-      toast.success("Tema eliminado");
+      toast.success("Tópico eliminado");
     } catch (error) {
-      toast.error("Error al eliminar el tema");
+      toast.error("Error al eliminar el tópico");
     }
   }
 
@@ -85,7 +85,7 @@ export const TopicsList = () => {
   const WithoutTopics = () => {
     return (
       <div className="order mt-2 flex flex-col items-center">
-        <p className="mb-2 text-lg font-medium">Agregar un tema.</p>
+        <p className="mb-2 text-lg font-medium">Agregar tópico.</p>
         <FaRegHandPointUp className="text-3xl md:hidden" />
         <FaRegHandPointDown className="hide text-3xl" />
       </div>
