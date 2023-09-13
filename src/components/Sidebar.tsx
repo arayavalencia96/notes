@@ -33,10 +33,10 @@ export const Sidebar: React.FC = () => {
   const createTopic = api.topic.create.useMutation({
     onSuccess: () => {
       void refetchTopics();
-      toast.success("Tema Creado");
+      toast.success("Tópico Creado");
     },
     onError: () => {
-      toast.error("No se pudo crear el tema");
+      toast.error("No se pudo crear el tópico");
     },
   });
 
@@ -50,10 +50,10 @@ export const Sidebar: React.FC = () => {
       setSelectedTopic(null);
       setAction("");
       void refetchTopics();
-      toast.success("Tema Actualizado");
+      toast.success("Tópico Actualizado");
     },
     onError: () => {
-      toast.error("No se pudo actualizar el tema");
+      toast.error("No se pudo actualizar el tópico");
     },
   });
 
@@ -85,7 +85,7 @@ export const Sidebar: React.FC = () => {
       <div className="flex items-center justify-between">
         <input
           type="text"
-          placeholder="Nuevo Tema"
+          placeholder="Nuevo Tópico"
           autoFocus
           className="input-borderer border-1 input input-primary input-sm w-full border-solid"
           value={inputValue}

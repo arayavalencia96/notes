@@ -9,7 +9,7 @@ export const Content: React.FC = () => {
     return (
       <div className="min-h col-span-3 flex w-full flex-col items-center justify-center md:w-3/4">
         <FaInfoCircle className="mb-2 text-6xl" />
-        <p className="text-xl font-medium">Seleccionar un tema</p>
+        <p className="text-xl font-medium">Seleccionar tópico</p>
       </div>
     );
   };

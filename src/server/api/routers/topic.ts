@@ -41,7 +41,7 @@ export const topicRouter = createTRPCRouter({
         },
       });
       if (!existingTopic) {
-        throw new Error(`No se encontró un tema con el ID: ${id}`);
+        throw new Error(`No se encontró un tópico con el ID: ${id}`);
       }
       const updatedTopic = await ctx.prisma.topic.update({
         where: {
